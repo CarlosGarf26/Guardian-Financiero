@@ -1,0 +1,17 @@
+{
+  "name": "El Guardián Financiero",
+  "short_name": "Guardián",
+  "description": "Tu mentor honesto para una salud financiera en pareja.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F8FAFC",
+  "theme_color": "#059669",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2830/2830284.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

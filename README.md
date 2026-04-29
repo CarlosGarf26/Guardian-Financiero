@@ -1,20 +1,16 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# 💸 Guardian Financiero
 
-# Run and deploy your AI Studio app
+¡Bienvenido! Este es nuestro asistente personal de finanzas diseñado para mejorar nuestra salud financiera en pareja.
 
-This contains everything you need to run your app locally.
+## 🚀 ¿Qué hace esta app?
+* **Registro con IA:** Clasifica gastos automáticamente usando Google Gemini.
+* **Sincronización:** Conectada a Firebase para ver los gastos de ambos en tiempo real.
+* **Control:** Dashboard interactivo para ver cuánto nos queda antes de la siguiente quincena.
 
-View your app in AI Studio: https://ai.studio/apps/1bee550d-3a48-40f0-a895-5a62d5a242af
+## 🛠️ Tecnologías
+* React + TypeScript
+* Firebase (Auth & Firestore)
+* Google AI Studio (Gemini API)
 
-## Run Locally
-
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+---
+*Desarrollado para transformar hábitos y alcanzar nuestras metas juntos.*

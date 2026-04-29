@@ -1,21 +1,12 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-
-// Tus credenciales reales
-const firebaseConfig = {
-  apiKey: "AIzaSyAo15JfLzuBCo17Xb4eL0fyrqNCDJzC728",
-  authDomain: "finanzasfamiliares-7034f.firebaseapp.com",
-  projectId: "finanzasfamiliares-7034f",
-  storageBucket: "finanzasfamiliares-7034f.firebasestorage.app",
-  messagingSenderId: "210648816928",
-  appId: "1:210648816928:web:d618ed3379520fea618b45"
-};
+import firebaseConfig from '../../firebase-applet-config.json';
 
 const app = initializeApp(firebaseConfig);
 
-// Exportar base de datos y autenticación
-export const db = getFirestore(app);
+// Exportar base de datos y autenticación usando la configuración del sistema
+export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 

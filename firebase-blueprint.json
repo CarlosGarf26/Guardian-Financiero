@@ -1,0 +1,48 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Information about the user and their partner",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "partnerId": { "type": "string", "description": "UID of the partner" },
+        "coupleId": { "type": "string", "description": "Shared ID for the couple" },
+        "linkingCode": { "type": "string", "description": "Unique code to invite partner" },
+        "monthlyBudget": { "type": "number" },
+        "savingsGoal": { "type": "number" },
+        "savingsGoalName": { "type": "string" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "An expense or income entry",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "coupleId": { "type": "string", "description": "Shared ID for the couple" },
+        "amount": { "type": "number" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" },
+        "needLevel": { "type": "integer", "description": "1 to 5 (Capricho to Supervivencia)" },
+        "isShared": { "type": "boolean" }
+      },
+      "required": ["amount", "category", "date", "userId"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile and settings"
+    },
+    "transactions/{transactionId}": {
+      "schema": "Transaction",
+      "description": "Financial transactions shared by the couple"
+    }
+  }
+}

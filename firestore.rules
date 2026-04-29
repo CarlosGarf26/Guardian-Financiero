@@ -1,0 +1,32 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Common helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow get: if isSignedIn(); // Allow checking if partner exists
+      allow create, update: if isOwner(userId);
+    }
+
+    // Transactions - Shared for the couple logic
+    match /transactions/{transactionId} {
+      allow read, write: if isSignedIn() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.coupleId == resource.data.coupleId;
+      allow create: if isSignedIn() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.coupleId == request.resource.data.coupleId;
+    }
+  }
+}

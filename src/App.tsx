@@ -126,6 +126,13 @@ const LinkingScreen = ({ profile, onLink }: { profile: any, onLink: (id: string)
             >
               {isLinking ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : 'Vincular Ahora'}
             </button>
+            
+            <button 
+              onClick={() => onLink(profile.uid)}
+              className="w-full py-3 text-slate-400 hover:text-slate-600 font-bold transition-colors text-sm"
+            >
+              Omitir por ahora (Usar solo)
+            </button>
           </div>
         </div>
       </motion.div>
@@ -427,7 +434,7 @@ const CoachView = ({ transactions, profile }: any) => {
   );
 };
 
-const SettingsView = ({ profile, user, installPrompt }: any) => {
+const SettingsView = ({ profile, user, installPrompt, onResetLink }: any) => {
   const [budget, setBudget] = useState(profile?.monthlyBudget || 15000);
   const [goal, setGoal] = useState(profile?.savingsGoal || 10000);
   const [isSaving, setIsSaving] = useState(false);
@@ -510,10 +517,28 @@ const SettingsView = ({ profile, user, installPrompt }: any) => {
         <div className="p-6 bg-blue-50 rounded-[32px] border border-blue-100">
           <div className="flex items-center gap-3 mb-4">
             <Users className="w-5 h-5 text-blue-600" />
-            <h3 className="text-xs font-black text-blue-600 uppercase tracking-widest">Pareja Vinculada</h3>
+            <h3 className="text-xs font-black text-blue-600 uppercase tracking-widest">Estado de Pareja</h3>
           </div>
-          <p className="text-sm text-blue-800 font-medium mb-1">Tu ID de Pareja:</p>
-          <p className="text-xs font-mono text-blue-600 break-all">{profile.coupleId || 'No vinculado'}</p>
+          {profile.coupleId === user.uid ? (
+            <div className="space-y-4">
+              <p className="text-sm text-blue-800 font-medium">Estás usando la app en modo solo.</p>
+              <div className="p-4 bg-white/50 rounded-2xl border border-blue-200">
+                <p className="text-[10px] uppercase font-black text-blue-400 tracking-widest mb-2">Tu Código de Invitación</p>
+                <p className="text-2xl font-mono font-bold text-blue-600 tracking-wider">{profile.linkingCode}</p>
+              </div>
+              <button 
+                onClick={onResetLink}
+                className="w-full py-3 bg-blue-600 text-white rounded-2xl font-bold text-sm"
+              >
+                Vincular a mi pareja
+              </button>
+            </div>
+          ) : (
+            <>
+              <p className="text-sm text-blue-800 font-medium mb-1">Tu ID de Pareja:</p>
+              <p className="text-xs font-mono text-blue-600 break-all">{profile.coupleId || 'No vinculado'}</p>
+            </>
+          )}
         </div>
 
         <button 
@@ -601,7 +626,10 @@ export default function App() {
   };
 
   const handleLink = async (coupleId: string) => {
-    setProfile((prev: any) => ({ ...prev, coupleId }));
+    if (user) {
+      await updateUserProfile(user.uid, { coupleId });
+      setProfile((prev: any) => ({ ...prev, coupleId }));
+    }
   };
 
   if (isLoading) {
@@ -737,7 +765,12 @@ export default function App() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.98 }}
           >
-            <SettingsView profile={profile} user={user} installPrompt={deferredPrompt} />
+            <SettingsView 
+              profile={profile} 
+              user={user} 
+              installPrompt={deferredPrompt} 
+              onResetLink={() => handleLink(null as any)}
+            />
           </motion.div>
         )}
       </AnimatePresence>

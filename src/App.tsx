@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { auth, signInWithGoogle } from './lib/firebase';
 import { onAuthStateChanged, User, signOut } from 'firebase/auth';
+import { Download } from 'lucide-react';
 import { 
   saveTransaction, 
   subscribeToTransactions, 
@@ -426,7 +427,7 @@ const CoachView = ({ transactions, profile }: any) => {
   );
 };
 
-const SettingsView = ({ profile, user }: any) => {
+const SettingsView = ({ profile, user, installPrompt }: any) => {
   const [budget, setBudget] = useState(profile?.monthlyBudget || 15000);
   const [goal, setGoal] = useState(profile?.savingsGoal || 10000);
   const [isSaving, setIsSaving] = useState(false);
@@ -440,6 +441,13 @@ const SettingsView = ({ profile, user }: any) => {
     setIsSaving(false);
   };
 
+  const handleInstall = async () => {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    const { outcome } = await installPrompt.userChoice;
+    console.log(`User response to install prompt: ${outcome}`);
+  };
+
   return (
     <div className="p-6 space-y-8">
       <div className="flex items-center gap-3 mb-2">
@@ -450,6 +458,29 @@ const SettingsView = ({ profile, user }: any) => {
       </div>
 
       <div className="space-y-6">
+        {/* PWA Install Section */}
+        {installPrompt && (
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-6 bg-emerald-50 rounded-[32px] border border-emerald-100"
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <Download className="w-6 h-6 text-emerald-600" />
+              <h3 className="text-xs font-black text-emerald-600 uppercase tracking-widest">Instalar Aplicación</h3>
+            </div>
+            <p className="text-sm text-emerald-800 mb-4 leading-relaxed">
+              Instala "El Guardián" en tu pantalla de inicio para una experiencia más rápida y directa.
+            </p>
+            <button 
+              onClick={handleInstall}
+              className="w-full py-3 bg-emerald-600 text-white rounded-2xl font-bold shadow-lg shadow-emerald-600/10 active:scale-95 transition-all"
+            >
+              Descargar App
+            </button>
+          </motion.div>
+        )}
+
         <div className="space-y-4">
           <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Presupuesto y Metas</h3>
           <div className="grid gap-4">
@@ -506,6 +537,20 @@ export default function App() {
   const [profile, setProfile] = useState<any>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'budget' | 'coach' | 'settings'>('budget');
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: any) => {
+      // Prevent Chrome 67 and earlier from automatically showing the prompt
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (u) => {
@@ -692,7 +737,7 @@ export default function App() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.98 }}
           >
-            <SettingsView profile={profile} user={user} />
+            <SettingsView profile={profile} user={user} installPrompt={deferredPrompt} />
           </motion.div>
         )}
       </AnimatePresence>
